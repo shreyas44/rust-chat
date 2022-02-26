@@ -39,7 +39,8 @@ impl User {
     }
 
     fn send(&self, msg: &str) {
-        let msg = format!("{}: {}\n", self.name.clone().red(), msg);
+        let name = self.name.as_str().red();
+        let msg = format!("{}: {}\n", name, msg);
         let mut stream = self.stream.try_clone().unwrap();
 
         stream.write(msg.as_bytes()).unwrap();
@@ -59,11 +60,7 @@ impl User {
                 break;
             }
 
-            match notify_rust::Notification::new().body(&msg).show() {
-                Ok(_) => (),
-                Err(err) => println(&err.to_string()),
-            }
-
+            notify_rust::Notification::new().body(&msg).show().ok();
             let time = get_formatted_time().red();
             print(&format!("\r[{}] {}", time, msg));
             self.print_current_msg();
@@ -110,14 +107,15 @@ impl User {
     }
 
     fn print_current_msg(&self) {
+        let name = self.name.as_str().green();
         let msg = self.current_msg.lock().unwrap();
-        let msg = format!("{}: {}", self.name.clone().green(), msg);
+        let msg = format!("{}: {}", name, msg);
         print(&msg);
     }
 
     fn print_current_complete_msg(&self) {
         let msg = self.current_msg.lock().unwrap();
-        let name = self.name.clone().green();
+        let name = self.name.as_str().green();
         let time = get_formatted_time().green();
 
         let msg = format!("[{}] {}: {}", time, name, msg);
