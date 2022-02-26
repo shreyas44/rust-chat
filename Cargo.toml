@@ -1,5 +1,5 @@
 [package]
-name = "new_chat"
+name = "rust-chat"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 crossterm = "0.23.0"
 chrono = "0.4"
+notify-rust = "4.5.6"
