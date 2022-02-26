@@ -22,7 +22,14 @@ pub struct User {
 
 impl User {
     pub fn new_get_name(stream: net::TcpStream) -> User {
-        let name = input("Enter your name: ");
+        let name = loop {
+            let mut name = input("Enter your name: ");
+            name = name.trim().to_string();
+            if name.len() > 0 {
+                break name;
+            }
+        };
+
         let current_msg = Arc::new(Mutex::new(String::new()));
         User {
             name,
