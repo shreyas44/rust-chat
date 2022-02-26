@@ -52,6 +52,7 @@ impl User {
                 break;
             }
 
+            notify_rust::Notification::new().body(&msg).show().unwrap();
             let time = get_formatted_time().red();
             print(&format!("\r[{}] {}", time, msg));
             self.print_current_msg();
@@ -82,6 +83,7 @@ impl User {
                     current_msg.pop();
                 }
                 KeyCode::Enter if current_msg.to_string() == "exit" => break,
+                KeyCode::Enter if current_msg.len() == 0 => continue,
                 KeyCode::Enter => {
                     drop(current_msg); // unlock mutex
                     self.print_current_complete_msg();
@@ -140,5 +142,11 @@ impl Clone for User {
             name: self.name.clone(),
             stream: self.stream.try_clone().unwrap(),
         }
+    }
+}
+
+impl Drop for User {
+    fn drop(&mut self) {
+        terminal::disable_raw_mode().unwrap();
     }
 }
