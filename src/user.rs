@@ -59,7 +59,11 @@ impl User {
                 break;
             }
 
-            notify_rust::Notification::new().body(&msg).show().unwrap();
+            match notify_rust::Notification::new().body(&msg).show() {
+                Ok(_) => (),
+                Err(err) => println!("{}", err.to_string()),
+            }
+
             let time = get_formatted_time().red();
             print(&format!("\r[{}] {}", time, msg));
             self.print_current_msg();
