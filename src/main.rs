@@ -1,4 +1,4 @@
-use new_chat::cmd;
+use rust_chat::cmd;
 use std::env;
 
 fn main() {
