@@ -1,4 +1,5 @@
-use std::env;
+use crate::{utils::println, User};
+use std::{env, net};
 
 pub enum Command {
     Connect(String),
@@ -35,4 +36,22 @@ pub fn parse_command(input: &mut env::Args) -> Result<Command, InputError> {
         Some(cmd) => Err(InputError::InvalidCmd(format!("invalid command: {}", cmd))),
         None => Err(InputError::NoCommand),
     }
+}
+
+pub fn connect(addr: &str) {
+    let stream = net::TcpStream::connect(addr).expect("Failed to connect to server");
+    let user = User::new_get_name(stream);
+    user.start_session();
+}
+
+pub fn open() {
+    let url = format!("{}:{}", "0.0.0.0", 8080);
+    let socket = net::TcpListener::bind(url).unwrap();
+
+    println("Waiting for connection...");
+    let (stream, addr) = socket.accept().unwrap();
+
+    println(format!("Connected to {}", addr).as_str());
+    let user = User::new_get_name(stream);
+    user.start_session()
 }
