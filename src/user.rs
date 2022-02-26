@@ -61,7 +61,7 @@ impl User {
 
             match notify_rust::Notification::new().body(&msg).show() {
                 Ok(_) => (),
-                Err(err) => println!("{}", err.to_string()),
+                Err(err) => println(&err.to_string()),
             }
 
             let time = get_formatted_time().red();
