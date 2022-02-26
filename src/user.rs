@@ -11,6 +11,7 @@ use crossterm::{
     style::Stylize,
     terminal, Command, ExecutableCommand,
 };
+use notify_rust::Notification;
 
 use crate::utils::{backspace, get_formatted_time, input, print, println};
 
@@ -25,6 +26,12 @@ impl User {
         let name = loop {
             let mut name = input("Enter your name: ");
             name = name.trim().to_string();
+
+            if name.contains(";") {
+                println!("Name cannot contain ';'");
+                continue;
+            }
+
             if name.len() > 0 {
                 break name;
             }
@@ -39,8 +46,7 @@ impl User {
     }
 
     fn send(&self, msg: &str) {
-        let name = self.name.as_str().red();
-        let msg = format!("{}: {}\n", name, msg);
+        let msg = format!("{};{}\n", self.name, msg);
         let mut stream = self.stream.try_clone().unwrap();
 
         stream.write(msg.as_bytes()).unwrap();
@@ -60,9 +66,17 @@ impl User {
                 break;
             }
 
-            notify_rust::Notification::new().body(&msg).show().ok();
+            let (name, msg) = msg.split_once(";").unwrap();
+            Notification::new()
+                .summary(name)
+                .body(msg)
+                .appname("Rust Chat")
+                .show()
+                .ok();
+
+            let name = name.red();
             let time = get_formatted_time().red();
-            print(&format!("\r[{}] {}", time, msg));
+            print(&format!("\r[{}] {}: {}", time, name, msg));
             self.print_current_msg();
         }
     }
